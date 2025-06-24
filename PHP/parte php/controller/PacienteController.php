@@ -5,7 +5,6 @@ require_once __DIR__ . '/../dao/PacienteApiDao.php';
 if (isset($_POST['salvar_paciente'])) {
     $pacienteDao = new PacienteApiDao();
 
-    // Organiza os dados recebidos do formulário
     $dadosNovoPaciente = [
         'nome' => $_POST['nome'],
         'cpf' => $_POST['cpf'],
@@ -13,35 +12,47 @@ if (isset($_POST['salvar_paciente'])) {
         'email' => $_POST['email']
     ];
 
-    // Chama o método criar do DAO
     $sucesso = $pacienteDao->criar($dadosNovoPaciente);
 
-    // Redireciona de volta para a página de pacientes com uma mensagem
     if ($sucesso) {
-        header("Location: /PROJETO/PHP/parte php/pacientes.php?msg=cadastrado_sucesso");
+        header("Location: ../pacientes.php?msg=cadastrado_sucesso");
     } else {
-       header("Location: /PROJETO/PHP/parte php/pacientes.php?msg=erro_cadastrar");
+       header("Location: ../pacientes.php?msg=erro_cadastrar");
+    }
+    exit();
+
+// Lógica para atualizar um paciente existente
+} elseif (isset($_POST['atualizar_paciente'])) {
+    $pacienteDao = new PacienteApiDao();
+    $id = (int)$_POST['id'];
+
+    $dadosAtualizados = [
+        'nome' => $_POST['nome'],
+        'cpf' => $_POST['cpf'],
+        'data_nascimento' => $_POST['data_nascimento'],
+        'email' => $_POST['email']
+    ];
+
+    $sucesso = $pacienteDao->atualizar($id, $dadosAtualizados);
+
+    if ($sucesso) {
+        header("Location: ../pacientes.php?msg=atualizado_sucesso");
+    } else {
+        header("Location: ../pacientes.php?msg=erro_atualizar");
     }
     exit();
 }
+
+
 function listarPacientesApi() {
     $pacienteApiDao = new PacienteApiDao();
     $listaDePacientes = $pacienteApiDao->read();
 
-    // Na nossa API simplificada, a rota GET /pacientes retorna um objeto com uma chave "message".
-    // Vamos verificar se a resposta é o que esperamos. Se for, exibimos a mensagem.
-    // Na Entrega 4, quando a API retornar uma lista de verdade, este 'if' pode ser removido.
-    if (isset($listaDePacientes['message'])) {
-        echo "<tr><td colspan='4' class='text-center'>" . htmlspecialchars($listaDePacientes['message']) . "</td></tr>";
-        return;
-    }
-
     if (empty($listaDePacientes)) {
-        echo "<tr><td colspan='4' class='text-center'>Nenhum paciente retornado pela API. Verifique se a API está rodando.</td></tr>";
+        echo "<tr><td colspan='5' class='text-center'>Nenhum paciente retornado pela API. Verifique se a API está rodando.</td></tr>";
         return;
     }
 
-    // Se a API retornar uma lista de pacientes (como no primeiro exemplo que fizemos)
     foreach ($listaDePacientes as $paciente) {
         echo "<tr>";
         echo "<td>" . htmlspecialchars($paciente['id']) . "</td>";
@@ -49,7 +60,7 @@ function listarPacientesApi() {
         echo "<td>" . htmlspecialchars($paciente['cpf']) . "</td>";
         echo "<td>
                 <a href='#' class='btn btn-sm btn-info'>Ver Exames</a> 
-                <a href='#' class='btn btn-sm btn-warning'>Editar</a> 
+                <a href='pacientes.php?acao=editar&id=" . htmlspecialchars($paciente['id']) . "' class='btn btn-sm btn-warning'>Editar</a> 
               </td>";
         echo "</tr>";
     }

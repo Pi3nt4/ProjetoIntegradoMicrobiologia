@@ -1,3 +1,25 @@
+<?php
+// Inclui o DAO para ter acesso aos métodos da API
+require_once 'dao/PacienteApiDao.php';
+
+$paciente_para_editar = null; // Variável para guardar o paciente a ser editado
+$modo_edicao = false;         // Flag para saber se estamos em modo de edição
+
+// Verifica se a ação é 'editar' e se um ID foi passado na URL
+if (isset($_GET['acao']) && $_GET['acao'] == 'editar' && isset($_GET['id'])) {
+    $id_para_editar = (int)$_GET['id'];
+    $pacienteDao = new PacienteApiDao(); // Precisamos do DAO para buscar o paciente
+    
+    // O método buscarPorId retorna um array associativo
+    $paciente_para_editar = $pacienteDao->buscarPorId($id_para_editar);
+    
+    if ($paciente_para_editar) {
+        $modo_edicao = true;
+    } else {
+        echo "<div class='alert alert-danger'>Paciente não encontrado para edição.</div>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -10,17 +32,16 @@
 <body>
 
     <?php 
-        // Inclui o menu de navegação padrão
         include 'view/menu.php'; 
     ?>
 
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-5">
-                <h2>Cadastro de Paciente</h2>
+                <h2><?php echo $modo_edicao ? 'Editar Paciente' : 'Cadastro de Paciente'; ?></h2>
                 <hr>
                 <?php 
-                    // Inclui o formulário de cadastro de paciente (que já ajustamos)
+                    // O formulário PacienteForm.php agora terá acesso à variável $paciente_para_editar
                     include 'view/PacienteForm.php'; 
                 ?>
             </div>
@@ -39,7 +60,6 @@
                     </thead>
                     <tbody>
                         <?php
-                            // Inclui o novo controller e chama a função para listar os pacientes da API
                             require_once 'controller/PacienteController.php';
                             listarPacientesApi();
                         ?>
