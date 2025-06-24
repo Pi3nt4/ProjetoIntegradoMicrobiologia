@@ -1,13 +1,14 @@
 <?php
-// Verifica se a variável $paciente_para_editar foi definida e não é nula
-$em_modo_edicao = isset($paciente_para_editar) && $paciente_para_editar !== null;
+// A lógica aqui fica mais clara. Verificamos se a variável é um objeto da classe Paciente.
+$em_modo_edicao = isset($paciente_para_editar) && $paciente_para_editar instanceof Paciente;
 
-// Define os valores dos campos. Se estiver editando, usa os dados do paciente, senão, deixa em branco.
-$id_valor = $em_modo_edicao ? $paciente_para_editar['id'] : '';
-$nome_valor = $em_modo_edicao ? $paciente_para_editar['nome'] : '';
-$cpf_valor = $em_modo_edicao ? $paciente_para_editar['cpf'] : '';
-$data_nascimento_valor = $em_modo_edicao ? $paciente_para_editar['data_nascimento'] : '';
-$email_valor = $em_modo_edicao ? $paciente_para_editar['email'] : '';
+// --- ALTERAÇÃO PRINCIPAL AQUI ---
+// Usamos os getters do objeto para preencher as variáveis
+$id_valor = $em_modo_edicao ? $paciente_para_editar->getId() : '';
+$nome_valor = $em_modo_edicao ? $paciente_para_editar->getNome() : '';
+$cpf_valor = $em_modo_edicao ? $paciente_para_editar->getCpf() : '';
+$data_nascimento_valor = $em_modo_edicao ? $paciente_para_editar->getDataNascimento() : '';
+$email_valor = $em_modo_edicao ? $paciente_para_editar->getEmail() : '';
 ?>
 
 <form action="controller/PacienteController.php" method="post">

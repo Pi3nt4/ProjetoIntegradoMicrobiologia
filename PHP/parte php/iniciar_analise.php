@@ -7,21 +7,18 @@ require_once __DIR__ . '/dao/ExameApiDao.php';
 $pacienteDao = new PacienteApiDao();
 $exameDao = new ExameApiDao();
 
-// Lógica para processar a submissão do formulário
+// Lógica para processar a submissão do formulário (sem alterações aqui)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Verifica se os dados necessários foram enviados
     if (isset($_POST['paciente_id']) && isset($_POST['tipo_exame'])) {
         $paciente_id = (int)$_POST['paciente_id'];
         $tipo_exame = $_POST['tipo_exame'];
 
-        // Chama o DAO para iniciar um novo exame através da API
         $novoExame = $exameDao->iniciarExame($paciente_id, $tipo_exame);
 
         if ($novoExame && isset($novoExame['exame_id'])) {
             $exame_id = $novoExame['exame_id'];
             
-            // Redireciona para o formulário correto com base no tipo de exame
             if ($tipo_exame === 'urina') {
                 header("Location: analise_urina.php?id=" . $exame_id);
                 exit();
@@ -30,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             }
         } else {
-            // Se houver um erro na criação do exame, guarda uma mensagem de erro
             $erro_mensagem = "Não foi possível iniciar o exame. Verifique se a API está a funcionar.";
         }
     } else {
@@ -38,8 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Busca a lista de todos os pacientes para preencher o seletor (dropdown)
-// Esta parte executa sempre que a página é carregada (via GET)
+// Busca a lista de todos os pacientes. $pacienteDao->read() agora retorna OBJETOS Paciente.
 $lista_pacientes = $pacienteDao->read();
 
 ?>
@@ -73,9 +68,10 @@ $lista_pacientes = $pacienteDao->read();
                                 <label for="paciente_id" class="form-label">Selecione o Paciente</label>
                                 <select class="form-select" name="paciente_id" id="paciente_id" required>
                                     <option value="" disabled selected>-- Clique para selecionar --</option>
+                                    
                                     <?php foreach ($lista_pacientes as $paciente): ?>
-                                        <option value="<?php echo htmlspecialchars($paciente['id']); ?>">
-                                            <?php echo htmlspecialchars($paciente['nome']); ?>
+                                        <option value="<?php echo htmlspecialchars($paciente->getId()); ?>">
+                                            <?php echo htmlspecialchars($paciente->getNome()); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
