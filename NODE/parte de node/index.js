@@ -74,6 +74,31 @@ app.post('/api/pacientes', async (req, res) => {
         res.status(500).json({ message: 'Erro interno no servidor.' });
     }
 });
+// ROTA PARA ATUALIZAR UM PACIENTE (PUT)
+app.put('/api/pacientes/:id', async (req, res) => {
+    const { id } = req.params; // Pega o ID da URL
+    const { nome, data_nascimento, email } = req.body; // Pega os novos dados do corpo da requisição
+    const cpf = req.body.cpf ? String(req.body.cpf).replace(/\D/g, '') : null;
+
+    // Validação simples
+    if (!nome || !cpf || !data_nascimento) {
+        return res.status(400).json({ message: 'Dados incompletos. Nome, CPF e Data de Nascimento são obrigatórios.' });
+    }
+
+    try {
+        const sql = 'UPDATE pacientes SET nome = ?, cpf = ?, data_nascimento = ?, email = ? WHERE id = ?';
+        const [result] = await dbPool.execute(sql, [nome, cpf, data_nascimento, email, id]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: `Paciente com ID ${id} atualizado com sucesso.` });
+        } else {
+            res.status(404).json({ message: `Paciente com ID ${id} não encontrado.` });
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar paciente:', error);
+        res.status(500).json({ message: 'Erro interno no servidor.' });
+    }
+});
 
 
 // --- ROTAS CRUD PARA EXAMES ---
