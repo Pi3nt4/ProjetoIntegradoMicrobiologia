@@ -100,6 +100,26 @@ app.put('/api/pacientes/:id', async (req, res) => {
     }
 });
 
+// ROTA PARA EXCLUIR UM PACIENTE (DELETE)
+app.delete('/api/pacientes/:id', async (req, res) => {
+    const { id } = req.params; // Pega o ID da URL
+
+    try {
+        const sql = 'DELETE FROM pacientes WHERE id = ?';
+        const [result] = await dbPool.execute(sql, [id]);
+
+        if (result.affectedRows > 0) {
+            // Se uma linha foi afetada, a exclusão funcionou.
+            res.status(200).json({ message: `Paciente com ID ${id} excluído com sucesso.` });
+        } else {
+            // Se nenhuma linha foi afetada, o paciente com aquele ID não foi encontrado.
+            res.status(404).json({ message: `Paciente com ID ${id} não encontrado.` });
+        }
+    } catch (error) {
+        console.error('Erro ao excluir paciente:', error);
+        res.status(500).json({ message: 'Erro interno no servidor.' });
+    }
+});
 
 // --- ROTAS CRUD PARA EXAMES ---
 

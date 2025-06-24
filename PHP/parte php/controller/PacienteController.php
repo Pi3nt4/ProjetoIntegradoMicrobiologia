@@ -41,6 +41,18 @@ if (isset($_POST['salvar_paciente'])) {
         header("Location: ../pacientes.php?msg=erro_atualizar");
     }
     exit();
+} elseif (isset($_GET['acao']) && $_GET['acao'] == 'excluir' && isset($_GET['id'])) {
+    $pacienteDao = new PacienteApiDao();
+    $id = (int)$_GET['id'];
+
+    $sucesso = $pacienteDao->excluir($id);
+
+    if ($sucesso) {
+        header("Location: ../pacientes.php?msg=excluido_sucesso");
+    } else {
+        header("Location: ../pacientes.php?msg=erro_excluir");
+    }
+    exit();
 }
 
 
@@ -61,6 +73,9 @@ function listarPacientesApi() {
         echo "<td>
                 <a href='#' class='btn btn-sm btn-info'>Ver Exames</a> 
                 <a href='pacientes.php?acao=editar&id=" . htmlspecialchars($paciente['id']) . "' class='btn btn-sm btn-warning'>Editar</a> 
+                <a href='controller/PacienteController.php?acao=excluir&id=" . htmlspecialchars($paciente['id']) . "' 
+                   class='btn btn-sm btn-danger' 
+                   onclick='return confirm(\"Tem certeza que deseja excluir este paciente? Todos os seus exames também serão perdidos.\");'>Excluir</a> 
               </td>";
         echo "</tr>";
     }

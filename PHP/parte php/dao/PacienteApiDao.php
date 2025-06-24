@@ -68,7 +68,7 @@ class PacienteApiDao {
     }
 
     /**
-     * (NOVO) Atualiza um paciente existente fazendo uma chamada PUT para a API.
+     *  Atualiza um paciente existente fazendo uma chamada PUT para a API.
      * @param int $id O ID do paciente a ser atualizado.
      * @param array $dadosPaciente Os dados do formulário a serem atualizados.
      * @return bool True se foi atualizado com sucesso, false caso contrário.
@@ -84,12 +84,31 @@ class PacienteApiDao {
             'Content-Type: application/json',
             'Content-Length: ' . strlen(json_encode($dadosPaciente))
         ]);
-
         curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         // A API retorna 200 (OK) em caso de sucesso na atualização
+        return $http_code == 200;
+    }
+
+    /**
+     * Exclui um paciente existente fazendo uma chamada DELETE para a API.
+     * @param int $id O ID do paciente a ser excluído.
+     * @return bool True se foi excluído com sucesso, false caso contrário.
+     */
+    public function excluir($id) {
+        $endpoint = $this->apiUrl . '/pacientes/' . $id;
+
+        $ch = curl_init($endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE'); // Define o método da requisição como DELETE
+
+        curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // A API retorna 200 (OK) em caso de sucesso na exclusão
         return $http_code == 200;
     }
 }

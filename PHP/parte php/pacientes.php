@@ -34,6 +34,22 @@ if (isset($_GET['acao']) && $_GET['acao'] == 'editar' && isset($_GET['id'])) {
     <?php 
         include 'view/menu.php'; 
     ?>
+    <div class="container mt-5">
+
+        <?php
+        // --- NOVO BLOCO PARA EXIBIR MENSAGENS DE FEEDBACK ---
+        if (isset($_GET['msg'])) {
+            $msg = $_GET['msg'];
+            if ($msg == 'excluido_sucesso') {
+                echo "<div class='alert alert-success'>Paciente excluído com sucesso!</div>";
+            } elseif ($msg == 'erro_excluir') {
+                echo "<div class='alert alert-danger'>Erro ao excluir paciente. Verifique se a API está online e tente novamente.</div>";
+            }
+            // Adicione outras mensagens (como de cadastro e atualização) se desejar
+        }
+        ?>
+
+        <div class="row">
 
     <div class="container mt-5">
         <div class="row">
